@@ -1,9 +1,7 @@
 from fastapi import FastAPI, File, UploadFile
-from os import getcwd
 from scheme import users
 import models
-from models import database
-from fastapi.responses import FileResponse
+from models import database, Files
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
@@ -12,27 +10,20 @@ app = FastAPI()
 db = database.async_session()
 
 
-@app.post("/files/")
-async def create_file(file: bytes = File()):
-    if len(file) >= 300*1048576:
-        return {"Your file is more than 300MB"}
-    return {'filename': file.filename, "file_size": len(file)}
-
-
-@app.post("/upload")
 @app.post("/upload")
 def upload(file: UploadFile = File(...)):
-    try:
-        contents = file.file.read()
-        with open(file.filename, 'wb') as f:
-            f.write(contents)
-    except Exception:
-        return {"message": "There was an error uploading the file"}
-    finally:
-        file.file.close()
-        return FileResponse(path=getcwd() + "/" + file.filename,
-                            media_type='application/octet-stream',
-                            filename=file.filename)
+    if Files.get_all_files(file.file):
+        try:
+            with open(file.filename, 'wb') as f:
+                while contents := file.file.read(300 * 104876):
+                    f.write(contents)
+        except Exception:
+            return {"message": "There was an error uploading the file"}
+        finally:
+            file.file.close()
+            return f'File {file.file} was upload successfully'
+    else:
+        return f'File {file.file} already in db'
 
 
 @app.post("/token")
