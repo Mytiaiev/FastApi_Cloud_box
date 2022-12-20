@@ -13,7 +13,7 @@ def fake_hash_password(password: str):
 
 class User(BaseModel):
     username: str
-    banned: bool | None = None
+    # banned: bool | None = None
 
 
 class UserInDB(User):

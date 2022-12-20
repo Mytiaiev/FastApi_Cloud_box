@@ -20,6 +20,7 @@ def upload(file: UploadFile = File(...)):
         except Exception:
             return {"message": "There was an error uploading the file"}
         finally:
+            File.save_file(name=file.filename, object=file.file)
             file.file.close()
             return f'File {file.file} was upload successfully'
     else:
