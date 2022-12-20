@@ -2,24 +2,14 @@ from fastapi import FastAPI, File, UploadFile
 from os import getcwd
 from scheme import users
 import models
-from models import database, Users, async_session
+from models import database
 from fastapi.responses import FileResponse
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
 
 app = FastAPI()
-db = async_session()
-
-
-@app.on_event("startup")
-async def startup():
-    await db.connect()
-
-
-@app.on_event("shutdown")
-async def shutdown():
-    await db.disconnect()
+db = database.async_session()
 
 
 @app.post("/files/")
@@ -30,10 +20,19 @@ async def create_file(file: bytes = File()):
 
 
 @app.post("/upload")
-async def upload_file(file: UploadFile = File(...)):
-    return FileResponse(path=getcwd() + "/" + file.filename,
-                        media_type='application/octet-stream',
-                        filename=file.filename)
+@app.post("/upload")
+def upload(file: UploadFile = File(...)):
+    try:
+        contents = file.file.read()
+        with open(file.filename, 'wb') as f:
+            f.write(contents)
+    except Exception:
+        return {"message": "There was an error uploading the file"}
+    finally:
+        file.file.close()
+        return FileResponse(path=getcwd() + "/" + file.filename,
+                            media_type='application/octet-stream',
+                            filename=file.filename)
 
 
 @app.post("/token")
