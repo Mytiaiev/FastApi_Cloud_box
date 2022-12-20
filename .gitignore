@@ -3,7 +3,7 @@ docker-compose.yml
 .vscode
 venv
 .venv
-.__pycache__/
+__pycache__/
 .migrations
-.models/__pycache__/
-.scheme/__pycache__/
+models/__pycache__/*
+scheme/__pycache__/*
