@@ -1,9 +1,18 @@
-# CLOUD BOX
-This application is supposed upload and download files for users after registration
+# FastAPI   CLOUD BOX
+This API service is supposed upload and download files for users 
 
 # How to run a project
 
---Run `uvicorn main:app --reload` to up lochalhost server
+--Run `sudo docker-compose up --build` to create container
 
 
---Open http://127.0.0.1:8000/docs#/ in browser
+--Open `http://localhost:8008/ `in browser to open project 
+
+
+--Open `http://localhost:8008/docs`in browser to open API docs page
+
+
+--Connect to DB `sudo docker-compose exec db psql --username=admin --dbname=facloud`
+
+--Run `sudo docker exec -it cloud python manage.py test` for test
+
