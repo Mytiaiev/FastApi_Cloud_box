@@ -34,7 +34,7 @@ async def shutdown() -> database.disconnect:
 
 @app.post("/upload")
 async def upload(file: UploadFile = File(...)):
-    if Files.objects.filter(object=str(file.file)).exists():
+    if Files.objects.filter(has_size=Files.get_hash(file.file)).exists():
         return f'File {file.file} already in db'
     else:
         try:
