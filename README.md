@@ -2,7 +2,7 @@
 This API service is supposed upload and download files for users 
 
 # How to run a project
-
+--Rename `docker-compose copy.yml` to `docker-compose.yml`
 --Run `sudo docker-compose up --build` to create container
 
 
