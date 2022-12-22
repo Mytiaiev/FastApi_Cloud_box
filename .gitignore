@@ -7,3 +7,6 @@ __pycache__/
 .migrations
 models/__pycache__/*
 scheme/__pycache__/*
+alembic
+app.__pycache__
+alembic.ini
