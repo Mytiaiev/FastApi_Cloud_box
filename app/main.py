@@ -1,6 +1,7 @@
 from fastapi import FastAPI, File, UploadFile
 from app.db import database
 from models import files, users
+import aiofiles
 
 
 app = FastAPI()
@@ -35,13 +36,14 @@ async def shutdown() -> database.disconnect:
 
 @app.post("/upload")
 async def upload(file: UploadFile = File(...)):
+    file_max_size = 300 * 104876
     if files.Files.objects.filter(
             hash_size=files.Files.get_hash(file.file)).exists():
         return f'File {file.file} already in db'
     else:
         try:
-            with open(file.filename, 'wb') as f:
-                while contents := file.file.read(300 * 104876):
+            async with aiofiles.open(file.filename, 'wb') as f:
+                while contents := await file.file.read(file_max_size):
                     f.write(contents)
         except Exception:
             return {"message": "There was an error uploading the file"}
