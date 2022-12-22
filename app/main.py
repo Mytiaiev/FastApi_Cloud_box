@@ -34,11 +34,9 @@ async def shutdown() -> database.disconnect:
 
 @app.post("/upload")
 async def upload(file: UploadFile = File(...)):
-    if Files.get_all_files(object=str(file.file)):
-        print(file.file)
-        print(str(file.file))
-        print(UploadFile)
-        print(type(UploadFile))
+    if Files.objects.filter(object=str(file.file)).exists():
+        return f'File {file.file} already in db'
+    else:
         try:
             with open(file.filename, 'wb') as f:
                 while contents := file.file.read(300 * 104876):
@@ -46,10 +44,9 @@ async def upload(file: UploadFile = File(...)):
         except Exception:
             return {"message": "There was an error uploading the file"}
         finally:
-            # await Files.save_file(name=str(file.filename),
-            #                       object=file.file,
-            #                       path=UploadFile)
+            path = f'{file.filename}.{file.content_type}'
+            await Files.objects.create(filename=str(file.filename),
+                                       hash_size=Files.get_hash(file.file),
+                                       path=path)
             file.file.close()
             return f'File {file.file} was upload successfully'
-    else:
-        return f'File {file.file} already in db'
