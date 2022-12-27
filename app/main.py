@@ -14,7 +14,7 @@ async def read_root() -> dict:
     Returns:
         dict: return objects from Files as dict
     """
-    return await files.Files.objects.get_or_none()
+    return await files.Files.objects.all()
 
 
 @app.on_event("startup")
@@ -36,22 +36,21 @@ async def shutdown() -> database.disconnect:
 
 @app.post("/upload")
 async def upload(file: UploadFile = File(...)):
-    file_max_size = 300 * 104876
-    if files.Files.objects.filter(
-            hash_size=files.Files.get_hash(file.file)).exists():
+    uploads_hash = files.Files.get_hash(file.file)
+    if await files.Files.objects.filter(hash_size=uploads_hash).exists():
         return f'File {file.file} already in db'
     else:
         try:
-            async with aiofiles.open(file.filename, 'wb') as f:
-                while contents := await file.file.read(file_max_size):
-                    f.write(contents)
+            async with aiofiles.open(file.filename, 'wb') as out_file:
+                content = await file.read()
+                await out_file.write(content)
+            return {"info": f"file '{file.filename}' saved"}
         except Exception:
             return {"message": "There was an error uploading the file"}
         finally:
-            path = f'{file.filename}.{file.content_type}'
             await files.Files.objects.create(
                 filename=str(file.filename),
-                hash_size=files.Files.get_hash(file.file),
-                path=path)
+                hash_size=uploads_hash,
+                path=file.filename)
             file.file.close()
             return f'File {file.file} was upload successfully'
