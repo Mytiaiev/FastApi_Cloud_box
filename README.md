@@ -14,5 +14,7 @@ This API service is supposed upload and download files for users
 
 --Connect to DB `sudo docker-compose exec db psql --username=admin --dbname=facloud`
 
---Run `sudo docker exec -it cloud python manage.py test` for test
+--Run `sudo docker exec -it facloud_web_1 alembic init migrations` to make migrations
+
+
 

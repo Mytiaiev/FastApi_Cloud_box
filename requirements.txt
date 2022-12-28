@@ -4,4 +4,7 @@ ormar==0.10.5
 psycopg2-binary==2.8.6
 uvicorn==0.13.4
 python-multipart
-aiofiles==0.6.0
+aiofiles
+passlib[bcrypt]
+pydantic[email]
+alembic
