@@ -2,7 +2,6 @@ from schemas import users
 from fetch import users as users_utils
 from fetch import dependencies
 from fastapi import APIRouter, Depends, HTTPException
-from models.users import create_all_tables as cra
 from fastapi.security import OAuth2PasswordRequestForm
 
 router = APIRouter()
@@ -10,7 +9,6 @@ router = APIRouter()
 
 @router.post("/auth", response_model=users.TokenBase)
 async def auth(form_data: OAuth2PasswordRequestForm = Depends()):
-    cra()
     user = await users_utils.get_user_by_email(email=form_data.username)
 
     if not user:
@@ -18,7 +16,8 @@ async def auth(form_data: OAuth2PasswordRequestForm = Depends()):
                             detail="Incorrect email or password")
 
     if not users_utils.validate_password(
-        password=form_data.password, hashed_password=user["hashed_password"]
+        password=form_data.password,
+        hashed_password=user["hashed_password"]
     ):
         raise HTTPException(status_code=400,
                             detail="Incorrect email or password")
@@ -36,5 +35,6 @@ async def create_user(user: users.UserCreate):
 
 
 @router.get("/users/me", response_model=users.UserBase)
-async def read_users_me(current_user: users.User = Depends(dependencies.get_current_user)):
+async def read_users_me(current_user: users.User = Depends(dependencies
+                                                           .get_current_user)):
     return current_user
