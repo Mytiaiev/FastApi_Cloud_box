@@ -1,9 +1,17 @@
 from fastapi import FastAPI
 from app.db import database
 from routers import files, users
+import logging
+from logging.config import dictConfig
+from my_log import log_config
+
+logger = logging.getLogger('foo-logger')
+dictConfig(log_config)
+
+logger.debug('This is test')
 
 
-app = FastAPI()
+app = FastAPI(debug=True)
 
 
 @app.on_event("startup")
