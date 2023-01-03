@@ -1,9 +1,11 @@
 from fastapi import FastAPI
-from app.db import database
+from app.db import database, engine
 from routers import files, users
 import logging
+from models.users import metadata
 from logging.config import dictConfig
 from my_log import log_config
+
 
 logger = logging.getLogger('foo-logger')
 dictConfig(log_config)
@@ -18,6 +20,7 @@ app = FastAPI(debug=True)
 async def startup() -> database.connect:
     """foo for connect to db
     """
+    metadata.create_all(engine)
     if not database.is_connected:
         await database.connect()
 

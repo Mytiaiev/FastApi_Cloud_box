@@ -1,6 +1,5 @@
 import sqlalchemy
 from sqlalchemy.dialects.postgresql import UUID
-from alembic import op
 
 metadata = sqlalchemy.MetaData()
 
@@ -35,8 +34,3 @@ tokens_table = sqlalchemy.Table(
     sqlalchemy.Column("expires", sqlalchemy.DateTime()),
     sqlalchemy.Column("user_id", sqlalchemy.ForeignKey("users.id")),
 )
-
-
-def create_all_tables():
-    op.create_table(users_table)
-    op.create_table(tokens_table)
