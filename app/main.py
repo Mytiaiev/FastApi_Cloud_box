@@ -1,16 +1,14 @@
 from fastapi import FastAPI
-from app.db import database, engine
-from routers import files, users
-import logging
-from models.users import metadata
+from .settings.db_config import database, engine
+from .settings.log_config import log_config
+from endpoints import files, users
+from models.users_db import metadata
 from logging.config import dictConfig
-from my_log import log_config
+import logging
 
 
 logger = logging.getLogger('foo-logger')
 dictConfig(log_config)
-
-logger.debug('This is test')
 
 
 app = FastAPI(debug=True)

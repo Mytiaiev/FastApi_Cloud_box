@@ -1,11 +1,11 @@
 import ormar
 import hashlib
-import app.db
+import app.settings.db_config as database
 
 
 class Files(ormar.Model):
 
-    class Meta(app.db.BaseMeta):
+    class Meta(database.BaseMeta):
         tablename = "files"
 
     id: int = ormar.Integer(primary_key=True)

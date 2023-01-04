@@ -1,6 +1,6 @@
-from schemas import users
-from fetch import users as users_utils
-from fetch import dependencies
+from models import users
+from app.settings import users_utils
+from app.settings import dependencies
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 

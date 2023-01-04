@@ -1,36 +1,38 @@
-import sqlalchemy
-from sqlalchemy.dialects.postgresql import UUID
+from datetime import datetime
+from typing import Optional
 
-metadata = sqlalchemy.MetaData()
-
-users_table = sqlalchemy.Table(
-    "users",
-    metadata,
-    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
-    sqlalchemy.Column("email", sqlalchemy.String(40), unique=True, index=True),
-    sqlalchemy.Column("name", sqlalchemy.String(100)),
-    sqlalchemy.Column("hashed_password", sqlalchemy.String()),
-    sqlalchemy.Column(
-        "is_active",
-        sqlalchemy.Boolean(),
-        server_default=sqlalchemy.sql.expression.true(),
-        nullable=False,
-    ),
-)
+from pydantic import UUID4, BaseModel, EmailStr, validator, Field
 
 
-tokens_table = sqlalchemy.Table(
-    "tokens",
-    metadata,
-    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
-    sqlalchemy.Column(
-        "token",
-        UUID(as_uuid=False),
-        server_default=sqlalchemy.text("uuid_generate_v4()"),
-        unique=True,
-        nullable=False,
-        index=True,
-    ),
-    sqlalchemy.Column("expires", sqlalchemy.DateTime()),
-    sqlalchemy.Column("user_id", sqlalchemy.ForeignKey("users.id")),
-)
+class TokenBase(BaseModel):
+    """ Return response data """
+    token: UUID4 = Field(..., alias="access_token")
+    expires: datetime
+    token_type: Optional[str] = "bearer"
+
+    class Config:
+        allow_population_by_field_name = True
+
+    @validator("token")
+    def hexlify_token(cls, value):
+        """ Convert UUID to pure hex string """
+        return value.hex
+
+
+class UserBase(BaseModel):
+    """ Return response data """
+    id: int
+    email: EmailStr
+    name: str
+
+
+class UserCreate(BaseModel):
+    """ Validate request data """
+    email: EmailStr
+    name: str
+    password: str
+
+
+class User(UserBase):
+    """ Return detailed response data with token """
+    token: TokenBase = {}

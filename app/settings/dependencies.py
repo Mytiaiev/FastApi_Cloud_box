@@ -1,4 +1,4 @@
-from fetch import users as users_utils
+from app.settings import users_utils
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 

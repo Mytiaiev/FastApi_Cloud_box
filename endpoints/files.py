@@ -1,5 +1,5 @@
 from fastapi import APIRouter, File, UploadFile
-from app.db import database
+from app.settings.db_config import database
 from models import files
 import aiofiles
 
